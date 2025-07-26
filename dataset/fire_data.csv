@@ -1,0 +1,5 @@
+temperature,humidity,wind_speed,vegetation_type,elevation,label
+35,20,10,grassland,250,1
+28,50,5,deciduous,120,0
+40,15,20,bamboo,300,1
+25,70,3,mixed,180,0

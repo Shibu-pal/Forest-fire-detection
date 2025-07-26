@@ -1,0 +1,16 @@
+<AuthLayout title="Forest fire" description="Enter your details below to know there fire in forest or not">
+            <Head title="Home" />
+            <form className="flex flex-col gap-6" onSubmit={submit}>
+=======
+    return (
+        <AuthLayout title="Forest fire" description="Enter your details below to know there fire in forest or not">
+            <Head title="Home" />
+            {/* Box with blurred image */}
+            <div className="mb-6 p-4 border rounded-lg overflow-hidden">
+                <img
+                    src="/Images/forestFires.jpg"
+                    alt="Forest Fires"
+                    className="w-full h-auto object-cover blur"
+                />
+            </div>
+            <form className="flex flex-col gap-6" onSubmit={submit}>
