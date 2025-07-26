@@ -22,10 +22,3 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
-/app/Http/Controller/auth
-/app/Http/Controller/settings
-/app/Http/Requests
-/resources/js/pages/auth
-/resources/js/pages/settings
-/resources/js/pages/dashboard.tsx
-/resources/js/pages/welcome.tsx
