@@ -102,6 +102,7 @@ export default function Home() {
                                 <option value="" disabled>
                                     Select Vegetation Type
                                 </option>
+                                <option value="deciduous">Coniferous</option>
                                 <option value="deciduous">Deciduous</option>
                                 <option value="grassland">Grassland</option>
                                 <option value="bamboo">Bamboo</option>
