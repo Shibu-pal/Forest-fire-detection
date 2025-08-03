@@ -1,136 +1,61 @@
-import { cn } from "@/lib/utils";
-import { Head, useForm } from '@inertiajs/react';
-import { LoaderCircle } from 'lucide-react';
-import { FormEventHandler } from 'react';
-
-import InputError from '@/components/input-error';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Link } from '@inertiajs/react';
 import AuthLayout from '@/layouts/auth-layout';
 
-type RegisterForm = {
-    temperature: string;
-    humidity: string;
-    wind_speed: string;
-    vegetation_type: string;
-    elevation: string;
-};
 export default function Home() {
-    const { data, setData, post, processing, errors, reset } = useForm<Required<RegisterForm>>({
-        temperature: '',
-        humidity: '',
-        wind_speed: '',
-        vegetation_type: '',
-        elevation: '',
-    });
-
-    const submit: FormEventHandler = (e) => {
-        e.preventDefault();
-        post(route('check'));
-    };
     return (
-        <AuthLayout title="Forest fire" description="Enter your details below to know there fire in forest or not">
-            <Head title="Home" />
-            <div className="container mx-auto p-4 bg-gray-100">
-                <form className="flex flex-col gap-6 relative" onSubmit={submit}>
-                    <div className="grid gap-6">
-                        <div className="grid gap-2">
-                            <Label htmlFor="temperature">Temperature</Label>
-                            <Input
-                                id="temperature"
-                                type="string"
-                                required
-                                autoFocus
-                                tabIndex={1}
-                                autoComplete="temperature"
-                                value={data.temperature}
-                                onChange={(e) => setData('temperature', (e.target.value))}
-                                disabled={processing}
-                                placeholder="Temperature"
-                            />
-                            <InputError message={errors.temperature} className="mt-2" />
+        <AuthLayout title="Forest Fire Prediction" description="Choose your preferred method to predict forest fires">
+            <div className="container mx-auto p-4">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mt-8 ">
+                    <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center text-center">
+                        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                         </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="humidity">Humidity</Label>
-                            <Input
-                                id="humidity"
-                                type="string"
-                                required
-                                tabIndex={2}
-                                autoComplete="humidity"
-                                value={data.humidity}
-                                onChange={(e) => setData('humidity', (e.target.value))}
-                                disabled={processing}
-                                placeholder="Humidity"
-                            />
-                            <InputError message={errors.humidity} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="wind_speed">Wind Speed</Label>
-                            <Input
-                                id="wind_speed"
-                                type="string"
-                                required
-                                tabIndex={3}
-                                autoComplete="new-wind_speed"
-                                value={data.wind_speed}
-                                onChange={(e) => setData('wind_speed', (e.target.value))}
-                                disabled={processing}
-                                placeholder="Wind Speed"
-                            />
-                            <InputError message={errors.wind_speed} />
-                        </div>
-
-                        <div className="grid gap-2">
-                            <Label htmlFor="vegetation_type">Vegetation Type</Label>
-                            <select
-                                id="vegetation_type"
-                                required
-                                tabIndex={4}
-                                value={data.vegetation_type}
-                                onChange={(e) => setData('vegetation_type', e.target.value)}
-                                disabled={processing}
-                                className={cn(
-                                    "border-input file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm bg-gray-900 text-gray-100",
-                                    "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]",
-                                    "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                                )}
-                            >
-                                <option value="" disabled>
-                                    Select Vegetation Type
-                                </option>
-                                <option value="deciduous">Coniferous</option>
-                                <option value="deciduous">Deciduous</option>
-                                <option value="grassland">Grassland</option>
-                                <option value="bamboo">Bamboo</option>
-                                <option value="mixed">Mixed</option>
-                            </select>
-                        </div>
-                        <div className="grid gap-2">
-                            <Label htmlFor="elevation">Elevation</Label>
-                            <Input
-                                id="elevation"
-                                type="string"
-                                required
-                                tabIndex={5}
-                                autoComplete="elevation"
-                                value={data.elevation}
-                                onChange={(e) => setData('elevation', (e.target.value))}
-                                disabled={processing}
-                                placeholder="Elevation"
-                            />
-                            <InputError message={errors.elevation} />
-                        </div>
-                        <Button type="submit" className="mt-2 w-full bg-gray-900 text-gray-100 hover:bg-gray-900 cursor-pointer hover:scale-105 transition-transform duration-200" tabIndex={6} disabled={processing}>
-                            {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Check Data
-                        </Button>
+                        <h2 className="text-xl font-bold mb-2">Image Input</h2>
+                        <p className="text-gray-600 mb-4">Upload a satelite image of a forest area to predict fire risk</p>
+                        <Link 
+                            href={route('imageform')}
+                            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        >
+                            Upload Image
+                        </Link>
                     </div>
-                </form>
+                    <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center text-center">
+                        <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16 flex items-center justify-center mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-xl font-bold mb-2">Data Input</h2>
+                        <p className="text-gray-600 mb-4">Enter environmental data to predict fire risk</p>
+                        <Link 
+                            href={route('dataform')}
+                            className="bg-gray-900 text-white px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+                        >
+                            Enter Data
+                        </Link>
+                    </div>
+                </div>
+                
+                <div className="mt-12 text-center">
+                    <h3 className="text-lg font-semibold mb-2">How It Works</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="text-2xl font-bold text-gray-900 mb-2">1</div>
+                            <p className="text-gray-600">Choose your input method (image or data)</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="text-2xl font-bold text-gray-900 mb-2">2</div>
+                            <p className="text-gray-600">Provide the required information</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-lg">
+                            <div className="text-2xl font-bold text-gray-900 mb-2">3</div>
+                            <p className="text-gray-600">Get instant fire risk prediction</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthLayout>
-    )
+    );
 }
