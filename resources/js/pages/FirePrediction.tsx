@@ -31,7 +31,7 @@ export default function FirePrediction() {
     };
     return (
         <AuthLayout title="Forest fire" description="Enter your details below to know there fire in forest or not">
-            <Head title="Fire Prediction" />
+            <Head title="Data Prediction" />
             <div className="container mx-auto p-4 bg-gray-100">
                 <form className="flex flex-col gap-6 relative" onSubmit={submit}>
                     <div className="grid gap-6">

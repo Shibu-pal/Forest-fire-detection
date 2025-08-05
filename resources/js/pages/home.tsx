@@ -1,9 +1,10 @@
-import { Link } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AuthLayout from '@/layouts/auth-layout';
 
 export default function Home() {
     return (
         <AuthLayout title="Forest Fire Prediction" description="Choose your preferred method to predict forest fires">
+            <Head title="Home" />
             <div className="container mx-auto p-4">
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mt-8 ">
                     <div className="bg-white rounded-lg shadow-lg p-4 flex flex-col items-center text-center">
