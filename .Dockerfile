@@ -37,4 +37,4 @@ COPY --from=build /app /var/www/html
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-EXPOSE 8080
+EXPOSE 80
