@@ -1,0 +1,42 @@
+# Laravel vendor & node_modules (will be installed inside container)
+/vendor
+/node_modules
+
+# Large datasets / ML training artifacts (exclude if you don't want them inside container)
+/dataset
+/model_training
+
+# Laravel storage - BUT ⚠️ keep framework/cache, framework/views, and sessions
+# only exclude logs
+/storage/logs
+
+# Public storage symlink (can be re-linked with artisan storage:link)
+/public/storage
+
+# Environment example (keep .env inside container!)
+/.env.example
+
+# Git files
+/.git
+/.gitignore
+
+# OS / editor files
+*.log
+*.DS_Store
+*.swp
+
+# Docker-specific
+docker-compose.override.yml
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Composer & NPM cache
+composer.lock
+package-lock.json
+
+# Other temp files
+/tmp/

@@ -18,7 +18,7 @@ class DataController extends Controller
             'elevation' => 'required|numeric',
         ]);
         $input_json = json_encode($request->all());
-        $command = 'python ../backend/predict_fire.py';
+        $command = 'python3 ../backend/predict_fire.py';
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],
@@ -75,7 +75,7 @@ class DataController extends Controller
             ]);
         }
         $pythonScriptPath = base_path('backend/image_predict_fire.py');
-        $command = 'python ' . escapeshellarg($pythonScriptPath) . ' ' . escapeshellarg($fullImagePath);
+        $command = 'python3 ' . escapeshellarg($pythonScriptPath) . ' ' . escapeshellarg($fullImagePath);
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],
