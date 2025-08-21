@@ -14,7 +14,7 @@
 /public/storage
 
 # Environment example (keep .env inside container!)
-/.env.example
+/.env
 
 # Git files
 /.git
