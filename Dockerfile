@@ -22,8 +22,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Node.js & npm
 RUN apt-get install -y nodejs npm
-RUN npm install 
-RUN npm run build
+WORKDIR /var/www/html
+RUN npm install && npm run build
 
 # Copy full Laravel project (root folder)
 COPY . /var/www/html/
