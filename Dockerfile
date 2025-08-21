@@ -25,7 +25,7 @@ RUN apt-get install -y nodejs npm
 
 # Copy full Laravel project (root folder)
 COPY . /var/www/html/
-RUN npm install && npm run build`
+RUN npm install && npm run build
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
