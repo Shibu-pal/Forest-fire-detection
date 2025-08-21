@@ -22,6 +22,8 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install Node.js & npm
 RUN apt-get install -y nodejs npm
+RUN npm install 
+RUN npm run build
 
 # Copy full Laravel project (root folder)
 COPY . /var/www/html/
@@ -29,7 +31,9 @@ COPY . /var/www/html/
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
 RUN php artisan storage:link || true
-RUN php artisan migrate
+RUN php artisan migrate --force
+RUN cp .env.example .env
+RUN php artisan key:generate
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir --break-system-packages -r backend/requirement.txt
