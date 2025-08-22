@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/var/www/html
     environment:
-      - APP_ENV=local
+      - APP_ENV=production
       - APP_KEY=
-      - APP_DEBUG=true
-      - APP_URL=http://localhost:8000
+      - APP_DEBUG=false
+      - APP_URL=https://forest-fire-detection-rugt.onrender.com
