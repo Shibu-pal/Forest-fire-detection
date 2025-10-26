@@ -47,9 +47,11 @@ class DataController extends Controller
             $result = json_decode($output, true);
             $fire_risk = $result['fire_risk'] ?? null;
             $fire_risk = $fire_risk == 1 ? 'Fire' : 'No fire';
+            $probability = $result['probability'] ?? 0;
 
             return Inertia::render('FirePredictionOutput', [
                 'fire_risk' => $fire_risk,
+                'probability' => $probability,
             ]);
         } else {
             return Inertia::render('FirePredictionOutput', [

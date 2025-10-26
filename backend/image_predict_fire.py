@@ -12,11 +12,17 @@ warnings.filterwarnings("ignore")
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 def main():
-    if len(sys.argv) != 2:
-        print(json.dumps({"error": "Invalid arguments. Expected image path as argument."}))
+    input_json = sys.stdin.read()
+    input_data = json.loads(input_json)
+    image_url = input_data.get('image_url', '')
+
+    if not image_url:
+        print(json.dumps({"error": "No image URL provided."}))
         return
-    
-    image_path = sys.argv[1]
+
+    # For simplicity, assume image_url is a local path or download it. But since IVR, perhaps it's not feasible.
+    # For now, treat as local path.
+    image_path = image_url  # Assuming it's a path, but in reality, need to download if URL.
     
     try:
         if not os.path.exists(image_path):

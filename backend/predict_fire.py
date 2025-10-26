@@ -1,10 +1,13 @@
 import json
-import sys
 import os
-
+import sys
+import warnings
 import joblib
 import pandas as pd
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+warnings.filterwarnings("ignore")
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 def main():
     input_json = sys.stdin.read()
@@ -27,9 +30,11 @@ def main():
             input_df[col] = 0
 
     processed = input_df[feature_columns]
-    prediction = model.predict(processed)[0]
+    probabilities = model.predict_proba(processed)[0]
+    probability = float(probabilities[1])  # Probability of fire (class 1)
+    fire_risk = 1 if probability > 0.5 else 0
 
-    output = {"fire_risk": int(prediction)}
+    output = {"fire_risk": int(fire_risk), "probability": probability}
     print(json.dumps(output))
 
 if __name__ == "__main__":
