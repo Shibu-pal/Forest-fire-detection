@@ -55,12 +55,14 @@ Route::get('/_env_debug', function() {
     if (request()->query('key') !== env('TMP_VIEW_KEY', 'secret-debug-key')) {
         abort(403);
     }
-    return [
-        'twilio_sid_env' => env('TWILIO_SID'),
-        'twilio_token_env' => env('TWILIO_AUTH_TOKEN'),
+    return response()->json([
+        'env_TWILIO_SID' => env('TWILIO_SID'),
+        'env_TWILIO_TOKEN' => env('TWILIO_AUTH_TOKEN'),
+        'getenv_TWILIO_SID' => getenv('TWILIO_SID'),
+        '_ENV_keys' => array_intersect(array_keys($_ENV), ['TWILIO_SID','TWILIO_AUTH_TOKEN']),
+        '_SERVER_keys' => array_intersect(array_keys($_SERVER), ['TWILIO_SID','TWILIO_AUTH_TOKEN']),
         'app_url' => env('APP_URL'),
-        'php_getenv' => getenv('TWILIO_SID'),
-    ];
+    ]);
 });
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
