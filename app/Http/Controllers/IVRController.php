@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Twilio\TwiML\VoiceResponse;
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class IVRController extends Controller
 {
@@ -320,6 +322,14 @@ class IVRController extends Controller
                     'lang' => $lang
                 ];
                 file_put_contents($tmpfile, json_encode($data));
+                Log::info('IVRController hit', [
+                    'CallSid' => $request->input('CallSid'),
+                    'From' => $request->input('From'),
+                    'payload' => $request->query('payload') ?? 'no-payload'
+                ]);
+
+                // touch a marker file so we can see on disk ( Render ephemeral ok for short tests )
+                Storage::put('tmp/ivr_hit_'.$request->input('CallSid').'.txt', now()->toDateTimeString());
 
                 // Run prediction command asynchronously
                 $command = 'php "' . base_path('artisan') . '" app:run-fire-prediction ' . escapeshellarg($tmpfile);

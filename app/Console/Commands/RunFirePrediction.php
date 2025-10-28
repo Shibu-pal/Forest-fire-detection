@@ -3,6 +3,8 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Twilio\Rest\Client;
 
 class RunFirePrediction extends Command
@@ -42,6 +44,17 @@ class RunFirePrediction extends Command
         $payload = $json['payload'] ?? [];
         $phone = $json['phone'] ?? '';
         $lang = $json['lang'] ?? 'en';
+
+        Log::info('RunFirePrediction started', [
+            'file_arg' => $this->argument('file') ?? null,
+            'callSid' => $callSid ?? null,
+        ]);
+
+        // marker for python invocation
+        Storage::put('tmp/prediction_started_'.$callSid.'.txt', json_encode([
+            'time' => now()->toDateTimeString(),
+            'payload' => $payload
+        ]));
 
         // Python path
         $pyPath = base_path('backend/predict_fire.py');
@@ -99,6 +112,10 @@ class RunFirePrediction extends Command
             ];
             $this->error(json_encode($query));
         }
+        
+
+        Log::info('python output', ['out' => $output, 'err' => $err, 'ret' => $ret]);
+        Storage::put('tmp/prediction_out_'.$callSid.'.json', $output ?: json_encode(['err'=>$err]));
         $this->updateCall($callSid, $query);
 
         // Clean up input
@@ -119,9 +136,6 @@ class RunFirePrediction extends Command
 
         $url = "https://api.twilio.com/2010-04-01/Accounts/$sid/Calls/$callSid.json";
 
-        // $data = [
-        //     'Twiml' => '<?xml version="1.0" encoding="UTF-8"><Response><Redirect method="POST">https://d72e36c21d8e.ngrok-free.app/ivr/menu?' . htmlspecialchars($message) . '</Redirect></Response>',
-        // ];
         // $this->info("Updating call $callSid with ".json_encode($data));
 
         // $ch = curl_init();
