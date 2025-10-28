@@ -51,5 +51,16 @@ Route::get('/show-tmp/{filename}', function ($filename) {
         'Content-Type' => $mime,
     ]);
 });
+Route::get('/_env_debug', function() {
+    if (request()->query('key') !== env('TMP_VIEW_KEY', 'secret-debug-key')) {
+        abort(403);
+    }
+    return [
+        'twilio_sid_env' => env('TWILIO_SID'),
+        'twilio_token_env' => env('TWILIO_AUTH_TOKEN'),
+        'app_url' => env('APP_URL'),
+        'php_getenv' => getenv('TWILIO_SID'),
+    ];
+});
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
