@@ -5,6 +5,7 @@ use App\Http\Controllers\IVRController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
@@ -65,11 +66,10 @@ Route::get('/_env_debug', function() {
     ]);
 });
 Route::get('/clear-config', function () {
-    \Artisan::call('config:clear');
-    \Artisan::call('cache:clear');
-    \Artisan::call('config:cache');
+    Artisan::call('config:clear');
+    Artisan::call('cache:clear');
+    Artisan::call('config:cache');
     return 'Config cleared and rebuilt!';
 });
-
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
