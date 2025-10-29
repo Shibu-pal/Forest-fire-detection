@@ -64,5 +64,12 @@ Route::get('/_env_debug', function() {
         'app_url' => env('APP_URL'),
     ]);
 });
+Route::get('/clear-config', function () {
+    \Artisan::call('config:clear');
+    \Artisan::call('cache:clear');
+    \Artisan::call('config:cache');
+    return 'Config cleared and rebuilt!';
+});
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
