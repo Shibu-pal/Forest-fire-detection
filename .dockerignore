@@ -15,6 +15,7 @@
 
 # Environment example (keep .env inside container!)
 /.env
+/.env.example
 
 # Git files
 /.git

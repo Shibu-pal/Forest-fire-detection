@@ -5,26 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Twilio\TwiML\VoiceResponse;
 use Twilio\Rest\Client;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class IVRController extends Controller
 {
-    public function test(){
-        $sid = getenv('TWILIO_SID');
-        $token = getenv("TWILIO_AUTH_TOKEN");
-        $twilio = new Client($sid, $token);
-
-        $call = $twilio->calls->create(
-            "+919733954576", // To
-            getenv('TWILIO_PHONE_NUMBER'), // From
-            // ["twiml" => `<Response><Redirect method="POST">https://d72e36c21d8e.ngrok-free.app/voice</Redirect></Response>`]
-            ["url" => "https://d72e36c21d8e.ngrok-free.app/voice"]
-        );
-        print($call->sid);
-    }
-
-
     // --- Voice / language mapping ---
     protected function voiceMap(): array
     {
@@ -322,21 +305,10 @@ class IVRController extends Controller
                     'lang' => $lang
                 ];
                 file_put_contents($tmpfile, json_encode($data));
-                Log::info('IVRController hit', [
-                    'CallSid' => $request->input('CallSid'),
-                    'From' => $request->input('From'),
-                    'payload' => $request->query('payload') ?? 'no-payload'
-                ]);
-
-                // touch a marker file so we can see on disk ( Render ephemeral ok for short tests )
-                Storage::put('tmp/ivr_hit_'.$request->input('CallSid').'.txt', now()->toDateTimeString());
 
                 // Run prediction command asynchronously
                 $command = 'php "' . base_path('artisan') . '" app:run-fire-prediction ' . escapeshellarg($tmpfile);
-                // $command = 'php "' . base_path('artisan') . '" app:run-fire-prediction "D:\Summer Internship\Forest_Fire\storage\app\tmp\tmp55.json"';
-                // dd($command);
                 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-                    // dd("start /B " . $command, "r");
                     pclose(popen("start /B cmd /C " . $command . " > NUL 2>&1", "r"));
                 } else {
                     shell_exec($command . ' > /dev/null 2>&1 &');
@@ -352,10 +324,10 @@ class IVRController extends Controller
                 $fire_risk = $request->query('fire_risk');
                 if($success == 1) {
                     if($fire_risk == 'Fire') {
-                        $text = $this->t('prediction_result_fire', $lang).number_format($request->query('probability')*100,1) . ' %.';
+                        $text = $this->t('prediction_result_fire', $lang).number_format($request->query('probability')*100,1) . $this->percentage($lang).'.';
                     }
                     else {
-                        $text = $this->t('prediction_result_no_fire', $lang).number_format($request->query('probability')*100,1) . ' %.';
+                        $text = $this->t('prediction_result_no_fire', $lang).number_format($request->query('probability')*100,1) . $this->percentage($lang).'.';
                     }
                     
                     $response->say($text, ['voice' => $voice, 'language' => $languageCode]);
@@ -417,43 +389,13 @@ class IVRController extends Controller
         return $vegetation[intval($data)] ?? "mixed";
     }
 
-    // --- Run prediction script (reads JSON from stdin, returns JSON on stdout) ---
-    protected function runDataPrediction(array $data)
+    protected function percentage($data)
     {
-        $input_json = json_encode($data);
-        $command = 'python3 ../backend/predict_fire.py';
-
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
+        $percentage = [
+            "en" => "percent",
+            "bn" => "শতাংশ",
+            "hi" => "प्रतिशत"
         ];
-
-        $process = proc_open($command, $descriptorspec, $pipes, base_path('backend'));
-        if (!is_resource($process)) {
-            return ['error' => 'Unable to start prediction script'];
-        }
-
-        fwrite($pipes[0], $input_json);
-        fclose($pipes[0]);
-
-        $output = stream_get_contents($pipes[1]);
-        fclose($pipes[1]);
-
-        $error_output = stream_get_contents($pipes[2]);
-        fclose($pipes[2]);
-
-        $return_value = proc_close($process);
-
-        if ($return_value !== 0) {
-            return ['error' => 'Prediction script error: ' . trim($error_output)];
-        }
-
-        $result = json_decode($output, true);
-        if ($result === null) {
-            return ['error' => 'Invalid JSON from prediction script: ' . substr($output, 0, 200)];
-        }
-
-        return $result;
+        return $percentage[$data] ?? "percent";
     }
 }

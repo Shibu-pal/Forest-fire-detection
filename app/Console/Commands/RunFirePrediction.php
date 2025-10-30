@@ -3,8 +3,6 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Twilio\Rest\Client;
 
 class RunFirePrediction extends Command
@@ -44,17 +42,6 @@ class RunFirePrediction extends Command
         $payload = $json['payload'] ?? [];
         $phone = $json['phone'] ?? '';
         $lang = $json['lang'] ?? 'en';
-
-        Log::info('RunFirePrediction started', [
-            'file_arg' => $this->argument('file') ?? null,
-            'callSid' => $callSid ?? null,
-        ]);
-
-        // marker for python invocation
-        Storage::put('tmp/prediction_started_'.$callSid.'.txt', json_encode([
-            'time' => now()->toDateTimeString(),
-            'payload' => $payload
-        ]));
 
         // Python path
         $pyPath = base_path('backend/predict_fire.py');
@@ -112,10 +99,7 @@ class RunFirePrediction extends Command
             ];
             $this->error(json_encode($query));
         }
-        
 
-        Log::info('python output', ['out' => $output, 'err' => $err, 'ret' => $ret]);
-        Storage::put('tmp/prediction_out_'.$callSid.'.json', $output ?: json_encode(['err'=>$err]));
         $this->updateCall($callSid, $query);
 
         // Clean up input
@@ -125,85 +109,60 @@ class RunFirePrediction extends Command
     }
 
     protected function updateCall($callSid, array $params)
-{
-    $sid = env("TWILIO_SID");
-    $token = env("TWILIO_AUTH_TOKEN");
-    $appUrl = env('APP_URL');
+    {
+        $sid = env("TWILIO_SID");
+        $token = env("TWILIO_AUTH_TOKEN");
+        $appUrl = env('APP_URL');
 
-    Log::info('updateCall.start', compact('callSid', 'params', 'sid', 'appUrl'));
+        if (!$sid || !$token) {
+            return false;
+        }
+        if (!$appUrl) {
+            return false;
+        }
 
-    if (!$sid || !$token) {
-        Log::error('Twilio credentials not configured', compact('sid','token'));
-        return false;
-    }
-    if (!$appUrl) {
-        Log::error('APP_URL not set');
-        return false;
-    }
+        // Build the public menu URL
+        $base = rtrim($appUrl, '/').'/menu';
+        $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
+        $menuUrl = $base . '?' . $query;
 
-    // Build the public menu URL
-    $base = rtrim($appUrl, '/').'/menu';
-    $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
-    $menuUrl = $base . '?' . $query;
+        $client = new \Twilio\Rest\Client($sid, $token);
 
-    Log::info('updateCall.menu_url', ['menuUrl' => $menuUrl]);
+        // STEP 1: fetch call to see if Twilio knows about it & its status
+        try {
+            $callInfo = $client->calls($callSid)->fetch();
+        } catch (\Throwable $e) {
+            // continue anyway — but this is suspicious if fetch fails
+        }
 
-    $client = new \Twilio\Rest\Client($sid, $token);
-
-    // STEP 1: fetch call to see if Twilio knows about it & its status
-    try {
-        $callInfo = $client->calls($callSid)->fetch();
-        Log::info('updateCall.callInfo', [
-            'sid' => $callInfo->sid ?? null,
-            'status' => $callInfo->status ?? null,
-            'from' => $callInfo->from ?? null,
-            'to' => $callInfo->to ?? null,
-        ]);
-    } catch (\Throwable $e) {
-        Log::error('updateCall.fetch_failed', ['error' => $e->getMessage()]);
-        // continue anyway — but this is suspicious if fetch fails
-    }
-
-    // STEP 2: try SDK update
-    try {
-        Log::info("Redirecting call $callSid to $menuUrl");
-        $call = $client->calls($callSid)->update([
-            'url' => $menuUrl,
-            'method' => 'GET'
-        ]);
-        Log::info('updateCall.success', ['sid' => $call->sid ?? null]);
-        return true;
-    } catch (\Throwable $e) {
-        // SDK threw — log full detail
-        Log::error('updateCall.sdk_error', [
-            'message' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-    }
-
-    // STEP 3: fallback — raw HTTP POST so you can see HTTP status + body
-    try {
-        $twilioApi = "https://api.twilio.com/2010-04-01/Accounts/$sid/Calls/$callSid.json";
-        Log::info('updateCall.fallback_post', ['url'=> $twilioApi]);
-
-        $response = \Illuminate\Support\Facades\Http::withBasicAuth($sid, $token)
-            ->asForm()
-            ->post($twilioApi, [
-                'Url' => $menuUrl,
-                'Method' => 'GET'
+        // STEP 2: try SDK update
+        try {
+            $call = $client->calls($callSid)->update([
+                'url' => $menuUrl,
+                'method' => 'GET'
             ]);
+            return true;
+        } catch (\Throwable $e) {
+            // SDK threw — log full details and fallback to raw HTTP
+            \Illuminate\Support\Facades\Log::error('updateCall.sdk_error', ['err' => $e->getMessage()]);
+        }
 
-        Log::info('updateCall.http_response', [
-            'status' => $response->status(),
-            'body' => $response->body()
-        ]);
+        // STEP 3: fallback — raw HTTP POST so you can see HTTP status + body
+        try {
+            $twilioApi = "https://api.twilio.com/2010-04-01/Accounts/$sid/Calls/$callSid.json";
 
-        return $response->successful();
-    } catch (\Throwable $e) {
-        Log::error('updateCall.http_error', ['err' => $e->getMessage()]);
-        return false;
+            $response = \Illuminate\Support\Facades\Http::withBasicAuth($sid, $token)
+                ->asForm()
+                ->post($twilioApi, [
+                    'Url' => $menuUrl,
+                    'Method' => 'GET'
+                ]);
+
+            return $response->successful();
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
-}
 
 
 
