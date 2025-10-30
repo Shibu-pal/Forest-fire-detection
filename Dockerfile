@@ -36,8 +36,6 @@ RUN php artisan key:generate
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir --break-system-packages -r backend/requirement.txt
-RUN php artisan config:clear
-RUN php artisan cache:clear
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
