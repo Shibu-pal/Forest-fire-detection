@@ -8,18 +8,18 @@ A comprehensive web application for predicting forest fires using machine learni
 
 ## 🧩 Table of Contents
 
-- [Demo](#demo)
-- [Screenshots](#screenshots)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Run Locally](#run-locally)
-- [Environment Variables](#environment-variables)
-- [Deployment](#deployment)
-- [Contributing](#contributing)
-- [Authors](#authors)
-- [License](#license)
-- [Feedback](#feedback)
+- [Demo](#-demo)
+- [Screenshots](#-screenshots)
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Installation](#-installation)
+- [Run Locally](#-run-locally)
+- [Environment Variables](#-environment-variables)
+- [Deployment](#-deployment)
+- [Contributing](#-contributing)
+- [Authors](#-authors)
+- [License](#-license)
+- [Feedback](#-feedback)
 
 ---
 
