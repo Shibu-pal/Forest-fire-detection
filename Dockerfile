@@ -29,7 +29,7 @@ RUN npm install && npm run build
 
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
-RUN php artisan storage:link || true
+RUN php artisan storage:link
 RUN php artisan migrate --force
 
 # Install Python dependencies
