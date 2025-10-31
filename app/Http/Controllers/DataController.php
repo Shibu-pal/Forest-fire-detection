@@ -71,6 +71,7 @@ class DataController extends Controller
         $imagePath = $request->image->store('temp','public');
 
         $fullImagePath = storage_path('app/public/' . $imagePath);
+        $input_json = json_encode(["image_url" => $fullImagePath]);
         if (!file_exists($fullImagePath)) {
             return Inertia::render('FirePredictionOutput', [
                 'error' => 'Failed to store image temporarily at '.$fullImagePath,
@@ -85,7 +86,7 @@ class DataController extends Controller
         $process = proc_open($command, $descriptorspec, $pipes);
 
         if (is_resource($process)) {
-            fwrite($pipes[0], $fullImagePath);
+            fwrite($pipes[0], $input_json);
             fclose($pipes[0]);
 
             $output = stream_get_contents($pipes[1]);
