@@ -85,6 +85,7 @@ class DataController extends Controller
         $process = proc_open($command, $descriptorspec, $pipes);
 
         if (is_resource($process)) {
+            fwrite($pipes[0], $fullImagePath);
             fclose($pipes[0]);
 
             $output = stream_get_contents($pipes[1]);
