@@ -76,8 +76,7 @@ class DataController extends Controller
                 'error' => 'Failed to store image temporarily at '.$fullImagePath,
             ]);
         }
-        $pythonScriptPath = base_path('backend/image_predict_fire.py');
-        $command = 'python3 ' . escapeshellarg($pythonScriptPath) . ' ' . escapeshellarg($fullImagePath);
+        $command = 'python3 ../backend/image_predict_fire.py';
         $descriptorspec = [
             0 => ['pipe', 'r'],
             1 => ['pipe', 'w'],

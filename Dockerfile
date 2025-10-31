@@ -31,8 +31,6 @@ RUN npm install && npm run build
 RUN composer install --no-dev --optimize-autoloader
 RUN php artisan storage:link || true
 RUN php artisan migrate --force
-# RUN cp .env.example .env
-# RUN php artisan key:generate
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir --break-system-packages -r backend/requirement.txt
