@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Twilio\TwiML\VoiceResponse;
+use Illuminate\Support\Facades\Http;
 use Twilio\Rest\Client;
 
 class IVRController extends Controller

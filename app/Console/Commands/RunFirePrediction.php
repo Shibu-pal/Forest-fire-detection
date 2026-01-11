@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
 use Twilio\Rest\Client;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
 
 class RunFirePrediction extends Command
 {
@@ -43,37 +44,12 @@ class RunFirePrediction extends Command
         $phone = $json['phone'] ?? '';
         $lang = $json['lang'] ?? 'en';
 
-        // Python path
-        $pyPath = base_path('backend/predict_fire.py');
         $this->info("Running prediction for Call SID: $callSid, Phone: $phone, ". json_encode($json));
-        $cmd = 'python3 ' . escapeshellarg($pyPath);
+        $response = Http::post('https://forest-fire-detection-rugt.onrender.com/predict/data', json_encode($payload));
 
-        $descriptorspec = [
-            0 => ['pipe', 'r'],
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
-
-        $proc = proc_open($cmd, $descriptorspec, $pipes, base_path('backend'));
-        if (is_resource($proc)) {
-            fwrite($pipes[0], json_encode($payload));
-            fclose($pipes[0]);
-
-            $output = stream_get_contents($pipes[1]);
-            fclose($pipes[1]);
-
-            $err = stream_get_contents($pipes[2]);
-            fclose($pipes[2]);
-
-            $ret = proc_close($proc);
-        } else {
-            $output = null;
-            $err = 'proc_open failed';
-            $ret = 1;
-        }
 
         // Parse result and update call
-        $result = json_decode($output, true);
+        $result = json_decode($response, true);
         if ($result && isset($result['fire_risk'])) {
             $fire_risk = $result['fire_risk'] == 1 ? 'Fire' : 'No fire';
             $probability = $result['probability'] ?? 0;
@@ -89,7 +65,7 @@ class RunFirePrediction extends Command
             // $this->info("Prediction completed: $query for Call SID: $callSid, Phone: $phone");
 
         } else {
-            $err = $err ?: 'Unknown error';
+            $err = 'API error';
             $query = `lang=$lang&step=tell_result&success=0&error=$err`;
             $query = [
                 'lang' => $lang,

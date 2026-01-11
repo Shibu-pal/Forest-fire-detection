@@ -11,3 +11,11 @@ services:
       - APP_KEY=
       - APP_DEBUG=false
       - APP_URL=https://forest-fire-detection-rugt.onrender.com/?1
+  python-api:
+    build:
+      context: .
+      dockerfile: Python.Dockerfile
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./backend:/app

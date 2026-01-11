@@ -6,3 +6,7 @@ scikit-learn
 tensorflow
 keras
 pillow
+fastapi
+uvicorn
+python-multipart
+ml-dtypes>=0.5.0
