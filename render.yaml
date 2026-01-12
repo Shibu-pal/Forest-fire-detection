@@ -12,7 +12,7 @@ services:
         value: http://forest-fire-python:8000 # Internal URL
 
   # 2. Python Private Service
-  - type: pserv
+  - type: web
     name: forest-fire-python
     runtime: docker
     dockerfilePath: python.Dockerfile

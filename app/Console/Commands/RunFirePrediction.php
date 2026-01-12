@@ -45,7 +45,7 @@ class RunFirePrediction extends Command
         $lang = $json['lang'] ?? 'en';
 
         $this->info("Running prediction for Call SID: $callSid, Phone: $phone, ". json_encode($json));
-        $response = Http::post('https://forest-fire-detection-rugt.onrender.com/predict/data', json_encode($payload));
+        $response = Http::post('http://forest-fire-python:8000/predict/data', json_encode($payload));
 
 
         // Parse result and update call
