@@ -18,7 +18,7 @@ class DataController extends Controller
             'vegetation_type' => 'required|string',
             'elevation' => 'required|numeric',
         ]);
-        $response = Http::asJson()->post('http://forest-fire-python/predict/data', $request->all());
+        $response = Http::asJson()->post('http://forest-fire-python.onrender.com/predict/data', $request->all());
 
         if ($response->successful()) {
             $result = $response->json();
@@ -43,7 +43,7 @@ class DataController extends Controller
                 'file', 
                 file_get_contents($imageFile->getRealPath()), 
                 $imageFile->getClientOriginalName()
-            )->post('http://forest-fire-python/predict/image');
+            )->post('http://forest-fire-python.onrender.com/predict/image');
 
             if ($response->successful()) {
                 $result = $response->json();
