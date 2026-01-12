@@ -3,7 +3,7 @@ services:
   - type: web
     name: forest-fire-web
     runtime: docker
-    dockerfile: Dockerfile
+    dockerfilePath: Dockerfile
     plan: free
     envVars:
       - key: APP_KEY
@@ -15,7 +15,7 @@ services:
   - type: pserv
     name: forest-fire-python
     runtime: docker
-    dockerfile: python.Dockerfile
+    dockerfilePath: python.Dockerfile
     plan: free
     envVars:
       - key: PORT
