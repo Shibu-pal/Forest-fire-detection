@@ -1,0 +1,22 @@
+services:
+  # 1. Laravel Web Service
+  - type: web
+    name: forest-fire-web
+    runtime: docker
+    dockerfile: Dockerfile
+    plan: free
+    envVars:
+      - key: APP_KEY
+        generateValue: true
+      - key: PYTHON_API_URL
+        value: http://forest-fire-python:8000 # Internal URL
+
+  # 2. Python Private Service
+  - type: pserv
+    name: forest-fire-python
+    runtime: docker
+    dockerfile: python.Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 8000
